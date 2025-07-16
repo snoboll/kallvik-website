@@ -49,6 +49,41 @@ export type Database = {
           updated_at?: string
         }
       }
+      sauna_status: {
+        Row: {
+          id: number
+          is_started: boolean
+          start_time: string | null
+          started_by: string | null
+          temperature: number | null
+          temperature_time: string | null
+          temperature_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          is_started?: boolean
+          start_time?: string | null
+          started_by?: string | null
+          temperature?: number | null
+          temperature_time?: string | null
+          temperature_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          is_started?: boolean
+          start_time?: string | null
+          started_by?: string | null
+          temperature?: number | null
+          temperature_time?: string | null
+          temperature_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
   }
 }

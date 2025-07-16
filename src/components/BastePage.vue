@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { supabase } from '@/lib/supabase'
 
 // Vedlager status
 const vedlager = ref({
@@ -17,16 +18,53 @@ const vedlager = ref({
 
 // Bastustatus
 const bastu = ref({
-  isStarted: true,
-  startTime: '2024-01-20 18:45',
-  startedBy: 'Erik',
+  id: 1,
+  isStarted: false,
+  startTime: '',
+  startedBy: '',
   temperature: 78,
-  temperatureTime: '2024-01-20 19:30',
-  temperatureBy: 'Anna',
+  temperatureTime: '',
+  temperatureBy: '',
 })
 
 // Ny temperatur input
 const newTemperature = ref('')
+
+// Ladda bastunstatus från databasen
+const loadSaunaStatus = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('sauna_status')
+      .select('*')
+      .order('id', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.error('Error loading sauna status:', error)
+      return
+    }
+
+    if (data && data.length > 0) {
+      const saunaData = data[0]
+      bastu.value = {
+        id: saunaData.id,
+        isStarted: saunaData.is_started,
+        startTime: saunaData.start_time || '',
+        startedBy: saunaData.started_by || '',
+        temperature: saunaData.temperature || 78,
+        temperatureTime: saunaData.temperature_time || '',
+        temperatureBy: saunaData.temperature_by || '',
+      }
+    }
+  } catch (error) {
+    console.error('Error loading sauna status:', error)
+  }
+}
+
+// Ladda data när komponenten mountas
+onMounted(() => {
+  loadSaunaStatus()
+})
 
 // Hjälpfunktioner för att få rätt färg och text
 const getStatusColor = (status: string) => {
@@ -117,25 +155,87 @@ const formatExactTime = (timestamp: string) => {
 }
 
 // Bastufunktioner
-const startBastu = () => {
-  bastu.value.isStarted = true
-  bastu.value.startTime = new Date().toISOString()
-  bastu.value.startedBy = 'Du'
+const startBastu = async () => {
+  try {
+    const now = new Date().toISOString()
+    
+    const { error } = await supabase
+      .from('sauna_status')
+      .update({
+        is_started: true,
+        start_time: now,
+        started_by: 'Du'
+      })
+      .eq('id', bastu.value.id)
+
+    if (error) {
+      console.error('Error starting sauna:', error)
+      return
+    }
+
+    // Uppdatera lokal state
+    bastu.value.isStarted = true
+    bastu.value.startTime = now
+    bastu.value.startedBy = 'Du'
+  } catch (error) {
+    console.error('Error starting sauna:', error)
+  }
 }
 
-const stopBastu = () => {
-  bastu.value.isStarted = false
-  bastu.value.startTime = ''
-  bastu.value.startedBy = ''
+const stopBastu = async () => {
+  try {
+    const { error } = await supabase
+      .from('sauna_status')
+      .update({
+        is_started: false,
+        start_time: null,
+        started_by: null
+      })
+      .eq('id', bastu.value.id)
+
+    if (error) {
+      console.error('Error stopping sauna:', error)
+      return
+    }
+
+    // Uppdatera lokal state
+    bastu.value.isStarted = false
+    bastu.value.startTime = ''
+    bastu.value.startedBy = ''
+  } catch (error) {
+    console.error('Error stopping sauna:', error)
+  }
 }
 
-const updateTemperature = () => {
+const updateTemperature = async () => {
   if (!newTemperature.value || isNaN(Number(newTemperature.value))) return
 
-  bastu.value.temperature = Number(newTemperature.value)
-  bastu.value.temperatureTime = new Date().toISOString()
-  bastu.value.temperatureBy = 'Du'
-  newTemperature.value = ''
+  try {
+    const now = new Date().toISOString()
+    const temperature = Number(newTemperature.value)
+
+    const { error } = await supabase
+      .from('sauna_status')
+      .update({
+        temperature: temperature,
+        temperature_time: now,
+        temperature_by: 'Du'
+      })
+      .eq('id', bastu.value.id)
+
+    if (error) {
+      console.error('Error updating temperature:', error)
+      return
+    }
+
+    // Uppdatera lokal state
+    bastu.value.temperature = temperature
+    bastu.value.temperatureTime = now
+    bastu.value.temperatureBy = 'Du'
+    newTemperature.value = ''
+  } catch (error) {
+    console.error('Error updating temperature:', error)
+  }
 }
 </script>
 

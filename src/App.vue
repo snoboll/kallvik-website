@@ -1,5 +1,12 @@
 <script setup lang="ts">
-// Clean and simple - no JavaScript needed for this static design
+import { ref } from 'vue'
+import BookingPage from './components/BookingPage.vue'
+
+const currentView = ref('home')
+
+function navigateTo(view: string) {
+  currentView.value = view
+}
 </script>
 
 <template>
@@ -8,58 +15,125 @@
     <header class="bg-white shadow-sm">
       <div class="max-w-4xl mx-auto px-4 py-6">
         <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-gray-900">Kallvik</h1>
+          <h1 class="text-3xl font-bold text-gray-900 cursor-pointer" @click="navigateTo('home')">
+            Kallvik
+          </h1>
           <nav class="flex space-x-8">
-            <a href="#hem" class="text-gray-600 hover:text-gray-900 transition-colors">Hem</a>
-            <a href="#boka" class="text-gray-600 hover:text-gray-900 transition-colors"
-              >Boka stuga</a
+            <button
+              @click="navigateTo('home')"
+              :class="
+                currentView === 'home'
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-600 hover:text-gray-900'
+              "
+              class="transition-colors"
             >
-            <a href="#ved" class="text-gray-600 hover:text-gray-900 transition-colors"
-              >Ved och bastu</a
+              Hem
+            </button>
+            <button
+              @click="navigateTo('boka')"
+              :class="
+                currentView === 'boka'
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-600 hover:text-gray-900'
+              "
+              class="transition-colors"
             >
-            <a href="#kalender" class="text-gray-600 hover:text-gray-900 transition-colors"
-              >Kalender</a
+              Boka stuga
+            </button>
+            <button
+              @click="navigateTo('ved')"
+              :class="
+                currentView === 'ved'
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-600 hover:text-gray-900'
+              "
+              class="transition-colors"
             >
+              Ved och bastu
+            </button>
+            <button
+              @click="navigateTo('kalender')"
+              :class="
+                currentView === 'kalender'
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-600 hover:text-gray-900'
+              "
+              class="transition-colors"
+            >
+              Kalender
+            </button>
           </nav>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-12">
-      <!-- Hero Section -->
-      <section class="text-center mb-16">
-        <h2 class="text-4xl font-bold text-gray-900 mb-4">Välkommen till Kallvik</h2>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-          Ett mysigt sommarhus beläget vid den vackra svenska kusten. Perfekt för avkoppling och
-          minnen som varar livet ut.
-        </p>
-      </section>
-
-      <!-- Features Grid -->
-      <section class="grid md:grid-cols-3 gap-8 mb-16">
-        <div class="bg-white p-6 rounded-lg shadow-sm">
-          <div class="text-3xl mb-4">🌊</div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Havsnära</h3>
-          <p class="text-gray-600">
-            Bara några minuters promenad till stranden och det kristallklara vattnet.
+    <main>
+      <!-- Home Page -->
+      <div v-if="currentView === 'home'" class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">Välkommen till Kallvik</h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Ett mysigt sommarhus beläget vid den vackra svenska kusten. Perfekt för avkoppling och
+            minnen som varar livet ut.
           </p>
-        </div>
+        </section>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm">
-          <div class="text-3xl mb-4">🌲</div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Naturens mitt</h3>
-          <p class="text-gray-600">Omgivet av vacker skog och skärgårdsmiljö för naturälskare.</p>
-        </div>
+        <!-- Features Grid -->
+        <section class="grid md:grid-cols-3 gap-8 mb-16">
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🌊</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Havsnära</h3>
+            <p class="text-gray-600">
+              Bara några minuters promenad till stranden och det kristallklara vattnet.
+            </p>
+          </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm">
-          <div class="text-3xl mb-4">🏡</div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Mysigt hem</h3>
-          <p class="text-gray-600">
-            Alla bekvämligheter för en avkopplande och minnesrik semester.
-          </p>
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🌲</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Naturens mitt</h3>
+            <p class="text-gray-600">Omgivet av vacker skog och skärgårdsmiljö för naturälskare.</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🏡</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Mysigt hem</h3>
+            <p class="text-gray-600">
+              Alla bekvämligheter för en avkopplande och minnesrik semester.
+            </p>
+          </div>
+        </section>
+
+        <!-- Quick Action -->
+        <section class="text-center">
+          <button
+            @click="navigateTo('boka')"
+            class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            Boka din vistelse
+          </button>
+        </section>
+      </div>
+
+      <!-- Booking Page -->
+      <BookingPage v-if="currentView === 'boka'" />
+
+      <!-- Placeholder for other pages -->
+      <div v-if="currentView === 'ved'" class="max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-lg shadow-sm p-8">
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Ved och Bastu</h1>
+          <p class="text-gray-600">Denna sida är under utveckling...</p>
         </div>
-      </section>
+      </div>
+
+      <div v-if="currentView === 'kalender'" class="max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-lg shadow-sm p-8">
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Kalender</h1>
+          <p class="text-gray-600">Denna sida är under utveckling...</p>
+        </div>
+      </div>
     </main>
 
     <!-- Footer -->
